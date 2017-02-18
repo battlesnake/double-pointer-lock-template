@@ -7,6 +7,7 @@ valgrind --quiet "$tmp"
 )
 exit 0
 #endif
+/* Run this file with bash to compile+execute it */
 #include <mutex>
 #include <iostream>
 #include <type_traits>
@@ -47,9 +48,13 @@ int main(int argc, char *argv[])
 {
 	(void) argc;
 	(void) argv;
+	/* Initialise s as a thread-safe wrapper around a std::string */
 	ThreadSafe<std::string> s("potato");
+	/* For doing one operation, the pointer proxy style is convenient */
 	s->append("es are awesome");
+	/* Function style: Passed function is executed within lock and may do multiple operations */
 	s([] (auto& str) { str += "!"; });
+	/* Not thread safe, as our lock object expires before the pointer is used.  Use the function style in place of this: */
 	std::cout << s->c_str() << std::endl;
 	return 0;
 }
